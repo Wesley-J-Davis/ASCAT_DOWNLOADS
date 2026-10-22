@@ -1,0 +1,10 @@
+job_info:
+GET_METOP-C_SM-99, ascat_driver.pl, /home/gmao_ops/GEOSadas-5_41_3/GEOSadas/Linux/bin_ops, discover36, dao_ops@, 00:55, /home/dao_ops/D_BOSS/local_stat
+GET_METOP-B_SM-99, ascat_driver.pl, /home/gmao_ops/GEOSadas-5_41_3/GEOSadas/Linux/bin_ops, discover36, dao_ops@, 00:55, /home/dao_ops/D_BOSS/local_stat
+
+job_rquired:LLK, GET_METOP-B_SM-99, 00:00, LLK, GET_METOP-B_SM-99, 00:00, T, 0 
+job_rquired:LLK, GET_METOP-C_SM-99, 00:00, LLK, GET_METOP-C_SM-99, 00:00, T, 0 
+
+job_schdul:LLK, GET_METOP-B_SM-99, 00:00, 08:10, 00:00, 1, 1, 01:20, 1, -O /discover/nobackup/gmao_ops/intermediate/D-BOSS/listings/GET_METOP-B_SM-99 -E /home/gmao_ops/operations/GEOS_Prep_Config/Prep_Config.GET_METOP-B_SM-99 -d
+
+job_schdul:LLK, GET_METOP-C_SM-99, 00:00, 08:10, 00:00, 1, 1, 01:20, 1, -O /discover/nobackup/gmao_ops/intermediate/D-BOSS/listings/GET_METOP-C_SM-99 -E /home/gmao_ops/operations/GEOS_Prep_Config/Prep_Config.GET_METOP-C_SM-99 -d
