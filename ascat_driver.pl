@@ -291,7 +291,7 @@ if ( ! -e "$PREP_CONFIG_FILE" ) {
 
 # Read from Prep_Config environment settings needed by ASCAT-2 processing.
 ( $ASCAT_TYPES = extract_config( "ASCAT_TYPES", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
-   or die "(smos_driver.pl) ERROR - can not set ASCAT_BASE configuration value\n";
+   or die "(smos_driver.pl) ERROR - can not set ASCAT_TYPES configuration value\n";
 
 ( $ASCAT_BASE = extract_config( "ASCAT_BASE", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
    or die "(smos_driver.pl) ERROR - can not set ASCAT_BASE configuration value\n";
@@ -302,8 +302,8 @@ $ENV{'ASCAT'} = $ASCAT_BASE;
 
 # Read directory information for input data.
 
-( $ASCAT_CONFIG = extract_config( "ASCAT_CONFIG", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
-   or print "(smos_driver.pl) WARNING - can not set ASCAT_PYTHON_PATH configuration value\n";
+( $ASCAT_WORK = extract_config( "ASCAT_WORK", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
+   or print "(smos_driver.pl) WARNING - can not set ASCAT_WORK configuration value\n";
 
 # Get output directories
 
@@ -313,7 +313,18 @@ $ENV{'ASCAT'} = $ASCAT_BASE;
 ( $MIN_FILES = extract_config( "MIN_FILES", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
    or die "(smos_driver.pl) ERROR - can not set MIN_FILES configuration value\n";
 
+( $PARALLEL_DOWNLOADS = extract_config( "PARALLEL_DOWNLOADS", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
+   or die "(smos_driver.pl) ERROR - can not set PARALLEL_DOWNLOADS configuration value\n";
 
+#### Prep Config Example Input
+#ASCAT_BASE = /home/dao_ops/operations/GIT-OPS/ASCAT_DOWNLOADS
+#ASCAT_TYPES = c
+#ASCAT_WORK  = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139/metop_c/scratch
+#ASCAT_STAGE = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139/metop_c/Y%y4/M%m2
+#PARALLEL_DOWNLOADS = 8
+#ASCAT_PYTHON_PATH = /usr/bin/python3
+#MIN_FILES = 1
+####
 # Make directories, if needed.
 # identify output dirs and clean them prior to running
 # ASCAT / FRP / FRP_FCS
@@ -344,7 +355,7 @@ $ENV{'PATH'} = join( ':', "${ASCAT_BASE}/bin/:/discover/nobackup/projects/gmao/s
 #**********************#
 
 print "Starting ASCAT download script.\n";
-print "Download BWLF1C,SCLF1C,SMUDP2 for $process_date\n";
+print "Download metop_$ASCAT_TYPES for $process_date\n";
 
 module ("list");
 print "PYTHONPATH=$ENV{'PYTHONPATH'}\n";
@@ -354,23 +365,11 @@ my ($year, $month, $day) = $process_date =~ /(\d{4})(\d{2})(\d{2})/;
 print "$year : $month : $day\n";
 foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   print "${ASCAT_STAGE}/${key}\n";
-  chdir("${ASCAT_STAGE}/${key}") or die "Cannot change to directory '$directory': $!\n";
+  chdir("${ASCAT_WORK}/${key}") or die "Cannot change to directory '$directory': $!\n";
   my $current_dir = getcwd();
   print "Current directory is $current_dir\n";
-  # If force flag defined, call download a success even if not enough files, else min file check will controll success/failure
-  if ( defined( $opt_F ) ) {
-  
-    print "Force flag set, forcing completion with less than desired number of files.\n";
-    $cmd_tmpl = "${ASCAT_PYTHON_PATH}/python ${ASCAT_BASE}/esa_downloader.py -p $key -y %y4 -m %m2 -d %d2 -M  $MIN_FILES -F ";
-}
-  else {
-    print "Force flag unset, minimum file check will determine success / failure.\n";
-    $cmd_tmpl = "${ASCAT_PYTHON_PATH}/python ${ASCAT_BASE}/esa_downloader.py -p $key -y %y4 -m %m2 -d %d2 -M $MIN_FILES ";
-  }
-
-#  $cmd_tmpl = "${ASCAT_PYTHON_PATH}/python ${ASCAT_BASE}/esa_downloader.py -p $key -y %y4 -m %m2 -d %d2 -M  $MIN_FILES -f False";
+  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d . -s %y4%m2 -e %y4%m2 -S $ASCAT_TYPES -j $PARALLEL_DOWNLOAD
   print "$cmd_tmpl\n";
-
   $cmd = token_resolve("${cmd_tmpl}", $process_date);
 
   print "$cmd\n";
@@ -383,7 +382,9 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
     recd_state( $fl_name, FAILED, $tab_argv, $sched_dir, $sched_sts_fl );
     die "error running esa_downloader.py";
   }
+  die "downloaded without failure";
 
+### next section is python script to prep data into lists ###
   $cmd2 = "bash ${ASCAT_BASE}/reorg.sh";
   print "bash ${ASCAT_BASE}/reorg.sh\n";
   $rc=system("$cmd2");
