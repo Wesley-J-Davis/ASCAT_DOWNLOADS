@@ -364,11 +364,15 @@ print "PATH=$ENV{'PATH'}\n";
 my ($year, $month, $day) = $process_date =~ /(\d{4})(\d{2})(\d{2})/;
 print "$year : $month : $day\n";
 foreach $key ( split(/,/, $ASCAT_TYPES) ) {
-  print "${ASCAT_STAGE}/${key}\n";
-  chdir("${ASCAT_WORK}/${key}") or die "Cannot change to directory '$directory': $!\n";
+  system ("mkdir -p $ASCAT_STAGE"); 
+  system ("mkdir -p $ASCAT_WORK"); 
+  print "STAGE DIR = ${ASCAT_STAGE}\n";
+  print "WORK DIR  = ${ASCAT_WORK}\n";
+
+  chdir("${ASCAT_WORK}\n") or die "Cannot change to directory '$directory': $!\n";
   my $current_dir = getcwd();
   print "Current directory is $current_dir\n";
-  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d . -s %y4%m2 -e %y4%m2 -S $ASCAT_TYPES -j $PARALLEL_DOWNLOAD
+  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_WORK} -s %y4%m2%d2 -e %y4%m2%d2 -S $ASCAT_TYPES -j $PARALLEL_DOWNLOAD
   print "$cmd_tmpl\n";
   $cmd = token_resolve("${cmd_tmpl}", $process_date);
 
@@ -377,10 +381,10 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   print "RETURN CODE=$rc\n";
 
   if ($rc != 0 ) {
-    err_log (4, "smos_driver.pl", "$err_time","$prep_ID","-1",
-	     {'err_desc' => "Error running esa_downloader.py.  Check listing."});
+    err_log (4, "ascat_driver.pl", "$err_time","$prep_ID","-1",
+	     {'err_desc' => "Error running shell downloading script.  Check listing."});
     recd_state( $fl_name, FAILED, $tab_argv, $sched_dir, $sched_sts_fl );
-    die "error running esa_downloader.py";
+    die "error running shell downloading script.\n";
   }
   die "downloaded without failure";
 
