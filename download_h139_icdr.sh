@@ -72,7 +72,7 @@
 #   bash 4+, curl, flock, GNU coreutils/findutils/awk.
 
 set -uo pipefail
-
+set -x
 HOST=ftphsaf.meteoam.it
 REMOTE_DIR=/h139/h139_cur_mon_data
 MAX_JOBS=8
@@ -203,7 +203,7 @@ export DEST=$dest URL="ftp://$HOST$REMOTE_DIR"
 # Arrays can't be exported; pass curl options through a declared string.
 export CURL_OPTS_DECL; CURL_OPTS_DECL=$(declare -p curl_opts | sed 's/curl_opts=/CURL_OPTS=/')
 
-resfile=$(mktemp) || die 2 "mktemp failed"
+resfile=$(mktemp -p /tmp tmp.$$.XXXXXX) || die 2 "mktemp failed"
 trap 'rm -f "$resfile"' EXIT
 for pass in 1 2; do
   if ((pass == 2)); then
