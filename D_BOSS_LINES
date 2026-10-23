@@ -9,3 +9,7 @@ LLK, GET_METOP-C_SM-99, 00:00, LLK, GET_METOP-C_SM-99, 00:00, T, -1
 job_schdul:
 LLK, GET_METOP-B_SM-99, 00:00, 08:10, 00:00, 1, 1, 01:20, 1, -O /discover/nobackup/gmao_ops/intermediate/D-BOSS/listings/GET_METOP-B_SM-99 -E /home/gmao_ops/operations/GEOS_Prep_Config/Prep_Config.GET_METOP-B_SM-99 -d
 LLK, GET_METOP-C_SM-99, 00:00, 08:10, 00:00, 1, 1, 01:20, 1, -O /discover/nobackup/gmao_ops/intermediate/D-BOSS/listings/GET_METOP-C_SM-99 -E /home/gmao_ops/operations/GEOS_Prep_Config/Prep_Config.GET_METOP-C_SM-99 -d
+
+task_status
+LLK, GET_METOP-B_SM-99, 00:00, 2026-09-24, COMPLETE, 2026-10-22-17:55, task ascat
+LLK, GET_METOP-B_SM-99, 00:00, 2026-09-24, COMPLETE, 2026-10-22-17:55, task ascat

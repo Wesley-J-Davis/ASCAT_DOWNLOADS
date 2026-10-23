@@ -1,7 +1,7 @@
 ASCAT_BASE = /home/dao_ops/operations/GIT-OPS/ASCAT_DOWNLOADS
 ASCAT_TYPES = b
-ASCAT_WORK  = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139/metop_b/scratch
-ASCAT_STAGE = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139/metop_b/Y%y4/M%m2
+ASCAT_STAGE  = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139
+FLIST_STAGE = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT
 PARALLEL_DOWNLOADS = 8
 ASCAT_PYTHON_PATH = /usr/bin/python3
 MIN_FILES = 1
