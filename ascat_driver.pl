@@ -302,13 +302,14 @@ $ENV{'ASCAT'} = $ASCAT_BASE;
 
 # Read directory information for input data.
 
-( $ASCAT_STAGE_template = extract_config( "ASCAT_WORK", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
+( $ASCAT_STAGE_template = extract_config( "ASCAT_STAGE", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
    or print "(smos_driver.pl) WARNING - can not set ASCAT_WORK configuration value\n";
 
 # Get output directories
 
-( $FLIST_STAGE  = extract_config( "ASCAT_STAGE", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
+( $FLIST_STAGE  = extract_config( "FLIST_STAGE", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
    or die "(smos_driver.pl) ERROR - can not set ASCAT_STAGE configuration value\n";
+
 $ASCAT_STAGE = token_resolve("${ASCAT_STAGE_template}", $process_date);
 
 ( $MIN_FILES = extract_config( "MIN_FILES", $PREP_CONFIG_FILE, "NONE" ) ) ne "NONE"
