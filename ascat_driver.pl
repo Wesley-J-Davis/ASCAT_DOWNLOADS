@@ -38,7 +38,7 @@ BEGIN {
 		'd:s',\$opt_d,
                 'a',\$opt_a,
                 'b',\$opt_b,
-                'F:s',\$opt_F,
+                'f:s',\$opt_f,
         	'sched_cnfg:s',\$sched_cnfg,
             	'sched_id=s',\$sched_id,
             	'sched_synp:s',\$sched_synp,
@@ -374,7 +374,8 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   chdir("${ASCAT_STAGE}") or die "Cannot change to directory '$directory': $!\n";
   my $current_dir = getcwd();
   print "Current directory is $current_dir\n";
-  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS";
+  if ($opt_f) { $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS -f"; }
+  else { $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS"; }
   print "$cmd_tmpl\n";
   $cmd = token_resolve("${cmd_tmpl}", $process_date);
 
@@ -382,11 +383,16 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   $rc=system("$cmd");
   print "RETURN CODE=$rc\n";
 
-  if ($rc != 0 ) {
+  if ($rc != 0 && ! $opt_f ) {
     err_log (4, "ascat_driver.pl", "$err_time","$prep_ID","-1",
 	     {'err_desc' => "Error running shell downloading script.  Check listing."});
     recd_state( $fl_name, FAILED, $tab_argv, $sched_dir, $sched_sts_fl );
     die "error running shell downloading script.\n";
+  }
+  elsif ($rc != 0 && $opt_f) {
+    err_log (4, "ascat_driver.pl", "$err_time","$prep_ID","-1",
+             {'err_desc' => "Error running shell downloading script. Job is being forced."});
+
   }
 
 #  die "downloaded without failure";
@@ -404,21 +410,26 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
 
   $rc=system("$cmd2");
   print "RETURN CODE=$rc\n";
-  if ($rc != 0 ) {
-    err_log (4, "smos_driver.pl", "$err_time","$prep_ID","-1",
+  if ($rc != 0 && $opt_f ) {
+    err_log (4, "ascat_driver.pl", "$err_time","$prep_ID","-1",
              {'err_desc' => "Error running esa_downloader.py.  Check listing."});
     recd_state( $fl_name, FAILED, $tab_argv, $sched_dir, $sched_sts_fl );
-    die "error reorganizing data at ${ASCAT_STAGE}/${key}";
+    die "error running data listing script ${ASCAT_BASE}/make_hsaf_flists.py that writes to ${ASCAT_STAGE}/${key}";
+  }
+  elsif ($rc != 0 && ! $opt_f){
+    err_log (4, "ascat_driver.pl", "$err_time","$prep_ID","-1",
+             {'err_desc' => "Error running data listing script. Job is being forced."});
   }
 
-}
+
+}  # end foreach key loop
 
   ########################
   # Rename output listings
   ########################
 
 if ( $opt_O ) {
-    system ("mv $listing_file $opt_O/smos_${prep_ID}.${err_time}.listing");
+    system ("mv $listing_file $opt_O/ASCAT_${prep_ID}.${err_time}.listing");
 }
 
 #  If smos_driver.pl is initiated by the scheduler and the output file size
