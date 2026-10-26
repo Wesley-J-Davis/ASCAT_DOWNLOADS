@@ -75,7 +75,7 @@ set -uo pipefail
 set -x
 
 dry_run=0
-force=0 
+force=1
 HOST=ftphsaf.meteoam.it
 REMOTE_DIR=/h139/h139_cur_mon_data
 MAX_JOBS=8
@@ -94,7 +94,7 @@ while (($#)); do
     -e|--end)     end=${2:-};   shift 2 ;;
     -S|--sat)     sats=${2:-};  shift 2 ;;
     -j|--jobs)    jobs=${2:-};  shift 2 ;;
-    -f|--force)   force=1;      shift ;;
+    -f|--force)   force=0;      shift ;;
     -n|--dry-run) dry_run=1;    shift ;;
     -h|--help)    usage; exit 0 ;;
     *) usage >&2; die 2 "unknown option: $1" ;;
@@ -159,7 +159,7 @@ todo_all=$(printf '%s\n' "$listing" | awk -v re="$NAME_RE" -v sats="$sats" \
 n_sel=$(printf '%s' "$todo_all" | grep -c .)
 range=$(printf '%s\n' "$todo_all" | awk -F'\t' 'NF{split($3,t,"_"); d=substr(t[6],1,8); if(!a||d<a)a=d; if(d>b)b=d} END{if(a) print a" to "b}')
 log "Selected $n_sel files (sat: $sats, observation dates: ${range:-none})"
-((n_sel > 0)) || { log "Nothing to do"; exit $force; }
+((n_sel > 0)) || { log "Nothing to do"; die $force "No files to download"; }
 
 # ---- 2. Drop files already complete on disk ---------------------------------
 # stdin/stdout: size<TAB>relpath<TAB>name lines; keeps those not complete on disk.

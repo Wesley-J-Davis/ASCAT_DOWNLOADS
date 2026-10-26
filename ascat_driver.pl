@@ -38,7 +38,7 @@ BEGIN {
 		'd:s',\$opt_d,
                 'a',\$opt_a,
                 'b',\$opt_b,
-                'f:s',\$opt_f,
+                'f',\$opt_f,
         	'sched_cnfg:s',\$sched_cnfg,
             	'sched_id=s',\$sched_id,
             	'sched_synp:s',\$sched_synp,
@@ -374,7 +374,8 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   chdir("${ASCAT_STAGE}") or die "Cannot change to directory '$directory': $!\n";
   my $current_dir = getcwd();
   print "Current directory is $current_dir\n";
-  if ($opt_f) { $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS -f"; }
+  print "opt_f = $opt_f\n";
+  if ( $opt_f ) { $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS -f"; }
   else { $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS"; }
   print "$cmd_tmpl\n";
   $cmd = token_resolve("${cmd_tmpl}", $process_date);
