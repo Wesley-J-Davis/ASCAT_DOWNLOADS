@@ -1,5 +1,5 @@
 ASCAT_BASE = /home/dao_ops/operations/GIT-OPS/ASCAT_DOWNLOADS
-ASCAT_TYPES = b
+ASCAT_TYPES = b,c
 ASCAT_STAGE  = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT/H139
 FLIST_STAGE = /discover/nobackup/projects/gmao/input/gmao_ops/obs/reanalysis/land/ASCAT
 PARALLEL_DOWNLOADS = 8

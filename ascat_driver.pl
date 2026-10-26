@@ -374,7 +374,7 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
   chdir("${ASCAT_STAGE}") or die "Cannot change to directory '$directory': $!\n";
   my $current_dir = getcwd();
   print "Current directory is $current_dir\n";
-  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $ASCAT_TYPES -j $PARALLEL_DOWNLOADS";
+  $cmd_tmpl = " bash ${ASCAT_BASE}/download_h139_icdr.sh -d ${ASCAT_STAGE} -s %y4%m2%d2 -e %y4%m2%d2 -S $key -j $PARALLEL_DOWNLOADS";
   print "$cmd_tmpl\n";
   $cmd = token_resolve("${cmd_tmpl}", $process_date);
 
@@ -397,7 +397,7 @@ foreach $key ( split(/,/, $ASCAT_TYPES) ) {
 ###                        --end-date YYYYMMDD [--name-a NAME_A]
 ###                        [--name-b NAME_B] [--name-c NAME_C]
 
-  $cmd2_tmpl = "python ${ASCAT_PYTHON_PATH}/make_hsaf_flists.py --data-dir $ASCAT_STAGE --flist-dir $FLIST_STAGE --start-date %y4%m2%d2 --end-date %y4%m2%d2 --satellites $ASCAT_TYPES";
+  $cmd2_tmpl = "${ASCAT_PYTHON_PATH} ${ASCAT_BASE}/make_hsaf_flists.py --data-dir $ASCAT_STAGE --flist-dir $FLIST_STAGE --start-date %y4%m2%d2 --end-date %y4%m2%d2 --satellites $key";
   print "$cmd2_tmpl\n";
   $cmd2 = token_resolve("${cmd2_tmpl}", $process_date);
   print "$cmd2\n";
