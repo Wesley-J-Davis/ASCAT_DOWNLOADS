@@ -1,0 +1,46 @@
+#!/bin/csh 
+
+set job_description = "This job acquires the METOP-B ascat file for the M21C LDAS"
+set config_dir = /home/dao_ops/operations/GEOS_Prep_Config
+set dboss_job = "GET-METOP_B-SM-99"
+
+if (  $#argv != 1  ) then 
+echo
+    echo "Attention: $dboss_job pulls data from /discover/nobackup/dao_ops/intermediate/flk/stage/gdas1/ascatw/."
+    echo "The prep_config file is ${config_dir}/Prep_Config.${dboss_job}"
+    echo "\nTo re-run this job under D-BOSS: $0 yyyymmdd"
+    echo
+    exit 1
+endif
+
+set date = $argv[1]
+
+set yyyy = `echo $date | cut -c1-4`
+set mm = `echo $date | cut -c5-6`
+set dd = `echo $date | cut -c7-8`
+
+echo "\n You are about to process ${job_description} for ${date}\n"
+echo -n " Are you sure you want to do this?[y/n] "
+set reply = $<
+if ( "$reply" == "n") then
+   exit
+endif
+
+#echo -n "\n Do you want to skip over missing data?  Do not say yes unless you have OC permission?[y/n] "
+#set reply2 = $<
+#
+#if ( "$reply" == "y") then
+#   if ( "$reply2" == "y") then
+#     set cmd = "/home/dao_ops/D_BOSS/schedule/utility/run_job ${dboss_job} LLK -dt ${yyyy}-${mm}-${dd} -syn 00:00 -str "\"-f\"" "
+#     echo  "\nExecuting:  ${cmd}\n"
+#     ${cmd}
+#   else
+#     set cmd = "/home/dao_ops/D_BOSS/schedule/utility/run_job ${dboss_job} LLK -dt ${yyyy}-${mm}-${dd} -syn 00:00"
+#     echo "\nExecuting:  ${cmd}\n"
+#     ${cmd}
+#   endif
+#endif
+
+set cmd = "/home/dao_ops/D_BOSS/schedule/utility/run_job ${dboss_job} LLK -dt ${yyyy}-${mm}-${dd} -syn 00:00"
+echo "\nExecuting:  ${cmd}\n"
+${cmd}
