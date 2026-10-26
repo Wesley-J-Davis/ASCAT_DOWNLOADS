@@ -94,7 +94,7 @@ while (($#)); do
     -e|--end)     end=${2:-};   shift 2 ;;
     -S|--sat)     sats=${2:-};  shift 2 ;;
     -j|--jobs)    jobs=${2:-};  shift 2 ;;
-    -f|--force)   force=1;      shift 2 ;;
+    -f|--force)   force=1;      shift ;;
     -n|--dry-run) dry_run=1;    shift ;;
     -h|--help)    usage; exit 0 ;;
     *) usage >&2; die 2 "unknown option: $1" ;;
@@ -157,31 +157,9 @@ todo_all=$(printf '%s\n' "$listing" | awk -v re="$NAME_RE" -v sats="$sats" \
   }')
 
 n_sel=$(printf '%s' "$todo_all" | grep -c .)
-###
-# at this point we need to do two things: 
-# if (( n_sel == 0 && force == 1 )); then
-#    # Action for: No files selected, BUT force is enabled
-#    log "0 files selected, but force is enabled. Proceeding anyway..."
-#    # Do something...
-#
-# elif (( n_sel == 0 && force == 0 )); then
-#    # Action for: No files selected, and force is NOT enabled (or undefined)
-#    log "0 files selected. Exiting."
-#    exit 1
-#
-# else
-#    # Action for: n_sel is NOT 0 (Files were selected)
-#    log "Found $n_sel files to process."
-#    # Do something...
-# fi
-
-# 1) we need to be able to read the status of the 'force' flag
-# 2) if n_sel == 0 && force flag unset - exit with non zero status code
-# 3) if n_sel == 0 && force flag set - continue with normal operation but print status message.
-###
 range=$(printf '%s\n' "$todo_all" | awk -F'\t' 'NF{split($3,t,"_"); d=substr(t[6],1,8); if(!a||d<a)a=d; if(d>b)b=d} END{if(a) print a" to "b}')
 log "Selected $n_sel files (sat: $sats, observation dates: ${range:-none})"
-((n_sel > 0)) || { log "Nothing to do"; exit 0; }
+((n_sel > 0)) || { log "Nothing to do"; exit $force; }
 
 # ---- 2. Drop files already complete on disk ---------------------------------
 # stdin/stdout: size<TAB>relpath<TAB>name lines; keeps those not complete on disk.
